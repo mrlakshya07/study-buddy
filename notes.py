@@ -22,14 +22,17 @@ def viewnotes():
             notes = f.readlines()
         if not notes:
             print("No notes found.")
-            return
+            return []
         print("\nYour Notes")
         for n in notes:
             print("-", n.strip())
+        return notes
     except FileNotFoundError:
         print("notes.txt file not found. Please add a note first.")
+        return []
     except IOError:
         print("Error: Could not read notes.txt")
+        return []
 
 def deletenotes():
     notes = viewnotes()
@@ -74,20 +77,27 @@ def searchnotes():
 
 
 def notes_choice():
-    print("\t\t\t\t    Menu\n\t\t\t\t1. Add Notes\n\t\t\t\t2. View Notes\n\t\t\t\t3.Search Notes\n\t\t\t\t4.Delete Notes\n\t\t\t\t5.Exit.")
-    ch = input("Enter your choice: ").strip()
-    match ch:
-        case "1":
-            addnotes()
-        case "2":
-            viewnotes()
-        case "3":
-            searchnotes()
-        case "4":
-            deletenotes()
-        case "5":
-            print("Goodbye!")
-        case _:
-            print("Invalid choice, please enter a number mentioned in the menu")
+    while True:
+        print("\t\t\t\t    Menu")
+        print("\t\t\t\t1. Add Notes")
+        print("\t\t\t\t2. View Notes")
+        print("\t\t\t\t3. Search Notes")
+        print("\t\t\t\t4. Delete Notes")
+        print("\t\t\t\t5. Exit.")
+        ch = input("Enter your choice: ").strip()
+        match ch:
+            case "1":
+                addnotes()
+            case "2":
+                viewnotes()
+            case "3":
+                searchnotes()
+            case "4":
+                deletenotes()
+            case "5":
+                print("Goodbye!")
+                break
+            case _:
+                print("Invalid choice, please enter a number mentioned in the menu")
             
 notes_choice()
