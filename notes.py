@@ -86,8 +86,7 @@ def notes_choice():
         case "4":
             deletenotes()
         case "5":
-                print("Goodbye!")
-                break
+            print("Goodbye!")
         case _:
             print("Invalid choice, please enter a number mentioned in the menu")
             
