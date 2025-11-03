@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notes - Study Buddy</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: darkgray; 
+        }
+        h2 { color: #333; }
+        .note { 
+            padding: 10px; 
+            margin: 10px 0; 
+            background: white; 
+            border-radius: 5px; 
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            color: #155724;
+        }
+        button { 
+            padding: 8px 15px; 
+            margin: 5px; 
+            cursor: pointer;
+        }
+        input, textarea {
+            padding: 8px;
+            margin: 5px 0;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Notes Management</h2>
+    
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+    
+    {% if action == 'add' %}
+        <h3>Add New Note</h3>
+        <form method="POST" action="/notes/add">
+            <textarea name="note" rows="4" placeholder="Enter your note here..." required></textarea><br>
+            <button type="submit">Save Note</button>
+        </form>
+    
+    {% elif action == 'search' %}
+        <h3>Search Notes</h3>
+        <form method="POST" action="/notes/search">
+            <input type="text" name="keyword" placeholder="Enter keyword..." required>
+            <button type="submit">Search</button>
+        </form>
+        <br>
+        {% if notes %}
+            <h3>Search Results:</h3>
+            {% for item in notes %}
+                <div class="note">{{ item[0] }}. {{ item[1] }}</div>
+            {% endfor %}
+        {% endif %}
+    
+    {% else %}
+        <h3>All Notes</h3>
+        {% if notes %}
+            {% for note in notes %}
+                <div class="note">{{ loop.index }}. {{ note }}</div>
+            {% endfor %}
+        {% else %}
+            <p>No notes found.</p>
+        {% endif %}
+    {% endif %}
+    
+    <br>
+    <button onclick="window.location.href='/notes?action=view'">View All</button>
+    <button onclick="window.location.href='/notes?action=add'">Add Note</button>
+    <button onclick="window.location.href='/notes?action=search'">Search</button>
+    <button onclick="window.location.href='/'">Back to Menu</button>
+</body>
+</html>
