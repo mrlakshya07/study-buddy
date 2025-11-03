@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Progress - Study Buddy</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: darkgray; 
+        }
+        .history {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        button { 
+            padding: 8px 15px; 
+            margin: 5px; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Study Progress</h2>
+    
+    {% if data %}
+        <h3>Study History:</h3>
+        <div class="history">{{ history }}</div>
+        
+        {% if plot_url %}
+            <h3>Visual Progress:</h3>
+            <img src="data:image/png;base64,{{ plot_url }}" alt="Study Progress Chart">
+        {% endif %}
+    {% else %}
+        <p>No progress data found. Please log study sessions first.</p>
+    {% endif %}
+    
+    <br>
+    <button onclick="window.location.href='/progress/log'">Log Study Session</button>
+    <button onclick="window.location.href='/'">Back to Menu</button>
+</body>
+</html>
