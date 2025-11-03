@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pomodoro Timer</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px;
+            background-color: darkgray;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #2F167A;
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            padding: 12px;
+            font-size: 18px;
+            width: 200px;
+            border: 2px solid #2F167A;
+            border-radius: 8px;
+            text-align: center;
+        }
+        button {
+            padding: 12px 30px;
+            margin: 10px 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #2F167A;
+            color: white;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #1a0c47;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(47, 22, 122, 0.3);
+        }
+        button.stop {
+            background-color: #dc3545;
+        }
+        button.stop:hover {
+            background-color: #c82333;
+        }
+        #timerDisplay {
+            font-size: 72px;
+            font-weight: bold;
+            color: #2F167A;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .hidden { 
+            display: none; 
+        }
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .complete-message {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <audio id="alarmSound" preload="auto">
+        <source src="/static/alarm.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container">
+        <h2>🍅 Pomodoro Timer</h2>
+        
+        <!-- Timer Setup -->
+        <div id="setup">
+            <p style="color: #666; margin-bottom: 10px;">Enter study duration (minutes):</p>
+            <input type="number" id="minutes" value="25" min="1" max="120">
+            <br><br>
+            <button onclick="startTimer()">▶️ Start Timer</button>
+            <button onclick="testSound()" style="background-color: #28a745;">🔊 Test Sound</button>
+        </div>
+        
+        <!-- Active Timer -->
+        <div id="active" class="hidden">
+            <div id="timerDisplay">25:00</div>
+            <div class="message" id="timerInfo"></div>
+            <button class="stop" onclick="stopTimer()">⏹️ Stop Timer</button>
+        </div>
+        
+        <!-- Complete -->
+        <div id="complete" class="hidden">
+            <div class="complete-message message">
+                <h3>⏰ Time's Up!</h3>
+                <p>Great work! Take a break. 🎉</p>
+            </div>
+            <button onclick="reset()">🔄 Start New Timer</button>
+        </div>
+        
+        <br><br>
+        <button onclick="window.location.href='/'">🏠 Back to Menu</button>
+    </div>
+
+    <script>
+        let interval;
+        let endTime;
+
+        function testSound() {
+            // Test the alarm sound
+            const audio = document.getElementById('alarmSound');
+            audio.play().catch(e => {
+                alert('Could not play sound. Error: ' + e);
+            });
+        }
+
+        function startTimer() {
+            const mins = document.getElementById('minutes').value;
+            
+            fetch('/pomodoro/start', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'minutes=' + mins
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('setup').classList.add('hidden');
+                    document.getElementById('active').classList.remove('hidden');
+                    
+                    document.getElementById('timerInfo').innerHTML = 
+                        `Started at: ${data.start_time}<br>Will end at: ${data.end_time}`;
+                    
+                    endTime = new Date();
+                    endTime.setSeconds(endTime.getSeconds() + data.total_seconds);
+                    
+                    updateDisplay();
+                    interval = setInterval(updateDisplay, 1000);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error starting timer: ' + error);
+            });
+        }
+
+        function updateDisplay() {
+            const now = new Date();
+            const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
+            
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+            
+            if (remaining <= 0) {
+                clearInterval(interval);
+                timerComplete();
+            }
+        }
+
+        function timerComplete() {
+            document.getElementById('active').classList.add('hidden');
+            document.getElementById('complete').classList.remove('hidden');
+            
+            // Play the alarm sound
+            const audio = document.getElementById('alarmSound');
+            audio.play().catch(e => {
+                console.log('Audio play failed:', e);
+            });
+            
+            // Vibrate on mobile
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 200]);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(interval);
+            reset();
+        }
+
+        function reset() {
+            clearInterval(interval);
+            document.getElementById('setup').classList.remove('hidden');
+            document.getElementById('active').classList.add('hidden');
+            document.getElementById('complete').classList.add('hidden');
+            document.getElementById('minutes').value = '25';
+        }
+    </script>
+</body>
+</html>
