@@ -1,19 +1,16 @@
-#SMART STUDY ASSISTANT
-
 from datetime import datetime
 
-def addnotes():
-    note = input("Enter your note: ").strip()
-    if not note:
-        print("Empty note not saved.")
-        return
+def addnotes(note_text):
+    if not note_text or not note_text.strip():
+        return {"success": False, "message": "Empty note not saved."}
+    
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         with open("notes.txt", "a") as f:
-            f.write(f"[{timestamp}] {note}\n")
-        print("Note saved with timestamp!")
+            f.write(f"[{timestamp}] {note_text}\n")
+        return {"success": True, "message": "Note saved with timestamp!"}
     except IOError:
-        print("Error: Could not write to notes.txt")
+        return {"success": False, "message": "Error: Could not write to notes.txt"}
 
 
 def viewnotes():
@@ -21,83 +18,48 @@ def viewnotes():
         with open("notes.txt", "r") as f:
             notes = f.readlines()
         if not notes:
-            print("No notes found.")
             return []
-        print("\nYour Notes")
-        for n in notes:
-            print("-", n.strip())
-        return notes
+        return [n.strip() for n in notes]
     except FileNotFoundError:
-        print("notes.txt file not found. Please add a note first.")
         return []
     except IOError:
-        print("Error: Could not read notes.txt")
         return []
 
-def deletenotes():
+
+def deletenotes(note_number):
     notes = viewnotes()
     if not notes:
-        return
+        return {"success": False, "message": "No notes found."}
+    
     try:
-        num = int(input("Enter the note number to delete: ").strip())
-        if num < 1 or num > len(notes):
-            print("Invalid note number.")
-            return
-        removed_note = notes.pop(num - 1)
+        if note_number < 1 or note_number > len(notes):
+            return {"success": False, "message": "Invalid note number."}
+        
+        removed_note = notes.pop(note_number - 1)
+        
         with open("notes.txt", "w") as f:
-            f.writelines(notes)
-        print(f"Deleted note: {removed_note.strip()}")
+            f.writelines([note + "\n" for note in notes])
+        
+        return {"success": True, "message": f"Deleted note: {removed_note}"}
     except ValueError:
-        print("Please enter a valid number.")
+        return {"success": False, "message": "Please enter a valid number."}
     except IOError:
-        print("Error: Could not update notes.txt")
+        return {"success": False, "message": "Error: Could not update notes.txt"}
 
-def searchnotes():
-    keyword = input("Enter keyword to search: ").strip().lower()
-    if not keyword:
-        print("Empty keyword, please enter something to search.")
-        return
-    notes = []
-    try:
-        with open("notes.txt", "r") as f:
-            notes = f.readlines()
-    except FileNotFoundError:
-        print("notes.txt file not found. Please add a note first.")
-        return
-    except IOError:
-        print("Error: Could not read notes.txt")
-        return
-    results = [(idx+1, note.strip()) for idx, note in enumerate(notes) if keyword in note.lower()]
+
+def searchnotes(keyword):
+    if not keyword or not keyword.strip():
+        return {"success": False, "message": "Empty keyword, please enter something to search.", "results": []}
+    
+    keyword = keyword.strip().lower()
+    notes = viewnotes()
+    
+    if not notes:
+        return {"success": False, "message": "No notes found.", "results": []}
+    
+    results = [(idx+1, note) for idx, note in enumerate(notes) if keyword in note.lower()]
+    
     if not results:
-        print(f"No notes found containing '{keyword}'.")
+        return {"success": False, "message": f"No notes found containing '{keyword}'.", "results": []}
     else:
-        print(f"\nNotes containing '{keyword}':")
-        for num, note in results:
-            print(f"{num}. {note}")
-
-
-def notes_choice():
-    while True:
-        print("\t\t\t\t    Menu")
-        print("\t\t\t\t1. Add Notes")
-        print("\t\t\t\t2. View Notes")
-        print("\t\t\t\t3. Search Notes")
-        print("\t\t\t\t4. Delete Notes")
-        print("\t\t\t\t5. Exit.")
-        ch = input("Enter your choice: ").strip()
-        match ch:
-            case "1":
-                addnotes()
-            case "2":
-                viewnotes()
-            case "3":
-                searchnotes()
-            case "4":
-                deletenotes()
-            case "5":
-                print("Goodbye!")
-                break
-            case _:
-                print("Invalid choice, please enter a number mentioned in the menu")
-            
-notes_choice()
+        return {"success": True, "message": f"Found {len(results)} note(s) containing '{keyword}'", "results": results}
