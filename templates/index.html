@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>STUDY BUDDY</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .hidden { display: none; }
+    label, input, button { margin: 5px 0; display: block; }
+    button { padding: 8px 15px; }
+    body{
+      background-color: darkgray;
+    }
+    h2{
+      margin-top: 150px;
+      margin-left: 550px;
+    }
+    label{
+      margin-left: 600px;
+    }
+    input{
+      margin-left: 550px;
+    }
+    #loginbutton{
+      margin-left: 600px;
+      margin-top: 20px;
+      border-top: 300px;
+    }
+    #signupbutton{
+      margin-left: 595px;
+      margin-bottom: 20px;
+      margin-top: 20px;
+      border-top: 300px;
+    }
+    #loginMessage{
+      margin-left: 535px;
+      font-display: auto;
+      font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+  <div id="loginDiv">
+    <h2>Login / Signup</h2>
+    <label for="username">Username:</label>
+    <input id="username" type="text" />
+    <label for="password">Password:</label>
+    <input id="password" type="password" />
+    <button id="loginbutton" onclick="login()">Login</button>
+    <button id="signupbutton" onclick="signup()">Sign up</button>
+    <p id="loginMessage" style="color:red;"></p>
+  </div>
+
+  <div id="menuDiv" class="hidden">
+    <h2>Main Menu</h2>
+    <button onclick="window.location.href='/notes?action=view'">View Notes</button>
+    <button onclick="window.location.href='/notes?action=add'">Add Notes</button>
+    <button onclick="window.location.href='/progress'">Study Progress</button>
+    <button onclick="window.location.href='/pomodoro'">Pomodoro Timer</button>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+
+  async function login() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const msg = document.getElementById('loginMessage');
+
+  if (!user || !pass) {
+    msg.textContent = "Both fields are required.";
+    msg.style.color = 'red';
+    return;
+  }
+
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({username: user, password: pass}),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    msg.textContent = "";
+    document.getElementById('loginDiv').classList.add('hidden');
+    document.getElementById('menuDiv').classList.remove('hidden');
+  } else {
+    msg.textContent = data.message;
+    msg.style.color = 'red';
+  }
+}
+
+async function signup() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const msg = document.getElementById('loginMessage');
+
+  if (!user || !pass) {
+    msg.textContent = "Both fields are required.";
+    msg.style.color = 'red';
+    return;
+  }
+
+  const res = await fetch('/api/signup', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({username: user, password: pass}),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    msg.textContent = data.message;
+    msg.style.color = 'green';
+  } else {
+    msg.textContent = data.message;
+    msg.style.color = 'red';
+  }
+}
+</script>
+
+</body>
+</html>
