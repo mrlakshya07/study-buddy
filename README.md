@@ -189,12 +189,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Contact
 
-**Your Name**
+**Lakshya Rathi**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
+- GitHub: [@mrlakshya07](https://github.com/mrlakshya07)
+- LinkedIn: [Lakshya Rathi]((https://www.linkedin.com/in/lakshya-rathi-39588837b/))
+- Email: lakshyarathi6556@gmail.com
 ## 🎯 Motivation
 
 As a B.Tech student, I found it challenging to manage my study time, take organized notes, and maintain focus during study sessions. This project was born from the need to have an all-in-one study management tool that combines note-taking, progress tracking, and the proven Pomodoro technique in a simple, easy-to-use interface.
