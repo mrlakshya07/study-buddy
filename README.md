@@ -192,7 +192,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Lakshya Rathi**
 
 - GitHub: [@mrlakshya07](https://github.com/mrlakshya07)
-- LinkedIn: [Lakshya Rathi]((https://www.linkedin.com/in/lakshya-rathi-39588837b/))
+- LinkedIn: [Lakshya Rathi](https://www.linkedin.com/in/lakshya-rathi-39588837b/)
 - Email: lakshyarathi6556@gmail.com
 ## 🎯 Motivation
 
