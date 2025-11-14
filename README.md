@@ -67,7 +67,7 @@ A comprehensive web-based study management system built with Flask that helps st
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/study_buddy.git
+   git clone https://github.com/mrlakshya07/study_buddy.git
    cd study_buddy
    ```
 
